@@ -109,7 +109,7 @@ FEATURED = [
      "Dymer, killing 4.",
      "drones"),
     ("markets", "WORLD", "MARKETS", "-3.7%",
-     "AI SELL-OFF SLASHES WORLD MARKETS",
+     "AI SELL-OFF HITS WORLD MARKETS",
      "Nikkei -5.06% too; Nvidia faced an SEC inquiry as CEO "
      "Huang stepped down.",
      "chart"),
@@ -349,25 +349,27 @@ def draw_card(img, box, item, tint, big=False):
         d.text((x + 10, y + 148), number, font=font(SANS_BOLD, 47), fill=NAVY)
         tx = x + 196
         yy = text_block(d, (tx, y + 42), headline, font(SANS_BOLD, 34), INK, w - 208, 39, 2)
-        text_block(d, (tx, yy + 8), fact, font(SANS, 15), INK, w - 208, 20, 4)
+        end = text_block(d, (tx, yy + 8), fact, font(SANS, 15), INK, w - 208, 20, 4)
     elif big:  # second lead card, narrower
         draw_pic(img, pic_fn, x + 10, y + 38, 104, 76)
         d.text((x + 10, y + 120), number, font=font(SANS_BOLD, 38), fill=NAVY)
         tx = x + 128
         yy = text_block(d, (tx, y + 40), headline, font(SANS_BOLD, 24), INK, w - 140, 28, 3)
-        text_block(d, (tx, yy + 7), fact, font(SANS, 14), INK, w - 140, 19, 5)
+        end = text_block(d, (tx, yy + 7), fact, font(SANS, 14), INK, w - 140, 19, 5)
     elif w > 280:  # row-2 card: left rail
         draw_pic(img, pic_fn, x + 10, y + 38, 78, 62)
         d.text((x + 10, y + 104), number, font=font(SANS_BOLD, 27), fill=NAVY)
         tx = x + 100
         yy = text_block(d, (tx, y + 40), headline, font(SANS_BOLD, 19), INK, w - 110, 22, 3)
-        text_block(d, (tx, yy + 5), fact, font(SANS, 13), INK, w - 110, 16, 3)
+        end = text_block(d, (tx, yy + 5), fact, font(SANS, 13), INK, w - 110, 16, 3)
     else:  # row-3 card: pic + number on one row, text below
         draw_pic(img, pic_fn, x + 10, y + 34, 52, 34)
         nw = d.textlength(number, font=font(SANS_BOLD, 26))
         d.text((x + w - 10 - nw, y + 36), number, font=font(SANS_BOLD, 26), fill=NAVY)
         yy = text_block(d, (x + 10, y + 72), headline, font(SANS_BOLD, 17), INK, w - 20, 19, 2)
-        text_block(d, (x + 10, yy + 2), fact, font(SANS, 12), INK, w - 20, 14, 2)
+        end = text_block(d, (x + 10, yy + 2), fact, font(SANS, 12), INK, w - 20, 14, 2)
+    if end > y + h - 4:
+        OVERFLOWS.append(("VERTICAL", headline, end, y + h - 4))
 
 
 def build():
