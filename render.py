@@ -68,9 +68,13 @@ def wrap(draw, text, fnt, max_w):
     return lines
 
 
+OVERFLOWS = []
+
+
 def text_block(draw, xy, text, fnt, fill, max_w, line_h, max_lines=None):
     lines = wrap(draw, text, fnt, max_w)
-    if max_lines:
+    if max_lines and len(lines) > max_lines:
+        OVERFLOWS.append((text, len(lines), max_lines))
         lines = lines[:max_lines]
     x, y = xy
     for ln in lines:
@@ -83,8 +87,8 @@ def text_block(draw, xy, text, fnt, fill, max_w, line_h, max_lines=None):
 # key, region, field, baked number, headline, one-line fact, archetype
 FEATURED = [
     ("cop31", "EUROPE", "CLIMATE", "130+",
-     "COP31 ENDS WITH NO DEAL ON FOSSIL FUELS",
-     "The final 'Antalya Pact' draft dropped the words 'fossil fuels'. "
+     "COP31 ENDS WITH NO DEAL",
+     "The final draft dropped the words 'fossil fuels'. "
      "The EU and some 130 parties said no, and the longest UN climate "
      "summit on record closed with nothing signed.",
      "globe"),
@@ -106,8 +110,8 @@ FEATURED = [
      "drones"),
     ("markets", "WORLD", "MARKETS", "-3.7%",
      "AI SELL-OFF SLASHES WORLD MARKETS",
-     "The Nikkei fell 5.06% too, as Nvidia faced an SEC accounting "
-     "inquiry and its CEO stepped down.",
+     "Nikkei -5.06% too; Nvidia faced an SEC inquiry as CEO "
+     "Huang stepped down.",
      "chart"),
     ("sparta", "EUROPE", "CONFLICT", "16",
      "RUSSIAN CARGO SHIP ABLAZE OFF FINLAND",
@@ -118,7 +122,7 @@ FEATURED = [
      "Tehran claimed two US radars; Manama says a civilian site was hit.",
      "radar"),
     ("icj", "ASIA-PACIFIC", "LAW", "2017",
-     "ICJ: MYANMAR RESPONSIBLE FOR GENOCIDE",
+     "ICJ: MYANMAR COMMITTED GENOCIDE",
      "The Hague backed Gambia's case over the 2017 Rohingya exodus.",
      "scales"),
     ("india", "ASIA-PACIFIC", "SPORT", "720",
@@ -341,11 +345,11 @@ def draw_card(img, box, item, tint, big=False):
     card_header(d, x, y, w, region, field)
     pic_fn = PICS[arche]
     if big and w > 500:
-        draw_pic(img, pic_fn, x + 12, y + 40, 176, 104)
-        d.text((x + 12, y + 148), number, font=font(SANS_BOLD, 47), fill=NAVY)
-        tx = x + 208
-        yy = text_block(d, (tx, y + 42), headline, font(SANS_BOLD, 33), INK, w - 220, 38, 2)
-        text_block(d, (tx, yy + 8), fact, font(SANS, 15), INK, w - 220, 20, 4)
+        draw_pic(img, pic_fn, x + 10, y + 40, 168, 104)
+        d.text((x + 10, y + 148), number, font=font(SANS_BOLD, 47), fill=NAVY)
+        tx = x + 196
+        yy = text_block(d, (tx, y + 42), headline, font(SANS_BOLD, 34), INK, w - 208, 39, 2)
+        text_block(d, (tx, yy + 8), fact, font(SANS, 15), INK, w - 208, 20, 4)
     elif big:  # second lead card, narrower
         draw_pic(img, pic_fn, x + 10, y + 38, 104, 76)
         d.text((x + 10, y + 120), number, font=font(SANS_BOLD, 38), fill=NAVY)
@@ -436,6 +440,7 @@ def build():
     d.line([MARGIN, fy - 6, MARGIN + CONTENT_W, fy - 6], fill=NAVY, width=2)
     fw = d.textlength(DATE_CHECK_LINE, font=font(SANS_BOLD, 12))
     d.text((MARGIN + (CONTENT_W - fw) / 2, fy), DATE_CHECK_LINE, font=font(SANS_BOLD, 12), fill=RED)
+    assert not OVERFLOWS, f"text overflow would be silently truncated: {OVERFLOWS}"
     return img
 
 
